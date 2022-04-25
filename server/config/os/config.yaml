@@ -1,4 +1,4 @@
-sharedSecret: <SHARED_SECRET_VALUE>
+sharedSecret: c3502bdfacb710a42ac23670bff5048852cc919b
 serviceProviders:
   - type: GitHub
     clientId: "123"
@@ -6,6 +6,4 @@ serviceProviders:
   - type: Quay
     clientId: "456"
     clientSecret: "54"
-baseUrl: http://<OAUTH_HOST_VALUE>
-
-
+baseUrl: https://spi-oauth-route-spi-system.apps.cluster-q5r2s.q5r2s.sandbox239.opentlc.com

@@ -33,5 +33,5 @@ roleRef:
   name: spiaccesstokens-file-retriever-server-sa
 subjects:
   - kind: ServiceAccount
-    name: spi-scm-file-retriever-server-sa
-    namespace: spi-scm
+    name: spi-system-file-retriever-server-sa
+    namespace: spi-system

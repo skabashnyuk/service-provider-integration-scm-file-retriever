@@ -1,8 +1,8 @@
 kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
-  namespace: spi-scm
-  name: spi-scm-file-retriever-server-ingress
+  namespace: spi-system
+  name: spi-system-file-retriever-server-ingress
 spec:
   rules:
     - host: "scm.minikube.ip.nip.io"
@@ -10,7 +10,7 @@ spec:
         paths:
           - backend:
               service:
-                name: spi-scm-file-retriever-server-service
+                name: spi-system-file-retriever-server-service
                 port:
                   number: 8000
             pathType: ImplementationSpecific

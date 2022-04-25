@@ -2,12 +2,12 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: file-retriever-server-service
-  namespace: spi-scm
+  namespace: spi-system
 spec:
   port:
     targetPort: 8080
   to:
     kind: Service
-    name: spi-scm-file-retriever-server-service
+    name: spi-system-file-retriever-server-service
   tls:
     termination: edge

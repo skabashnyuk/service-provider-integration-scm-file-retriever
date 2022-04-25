@@ -1,23 +1,44 @@
 #!/usr/bin/env bash
 set -e
-echo 'Updating host variables'
+echo 'Deploying SPI OAuth2 config'
 
+OAUTH_URL=$(oc get route/spi-oauth-route --namespace=spi-system -o=jsonpath={'.spec.host'})
+tmpfile=/tmp/config.yaml
 
-SCM_HOST_VALUE='file-retriever-server-service-spi-scm.'$(oc get ingresses.config/cluster -o jsonpath={.spec.domain})
-OAUTH_URL='spi-oauth-route-spi-system.'$( oc get ingresses.config/cluster -o jsonpath={.spec.domain})
-echo "scm="$SCM_HOST_VALUE
-echo "oauth="$OAUTH_URL
+spiConfig=$(cat <<EOF
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-#
-#yq -i e '.spec.rules[0].host = "'$SCM_HOST_VALUE'"' $SCRIPT_DIR'/../config/k8s/ingress.yaml'
-#jq 'map(select(.op == "replace").value |= "'$OAUTH_URL'")' $SCRIPT_DIR'/../config/k8s/ingress-patch.json' > tmp.$$.json && mv tmp.$$.json $SCRIPT_DIR'/../config/k8s/ingress-patch.json'
-#
-#
-yq -i e '.sharedSecret = "'$(openssl rand -hex 20)'"' $SCRIPT_DIR'/../config/os/config.yaml'
-yq -i e '.baseUrl = "https://'$OAUTH_URL'"' $SCRIPT_DIR'/../config/os/config.yaml'
-#
-#
+sharedSecret: $(openssl rand -hex 20)
+serviceProviders:
+  - type: GitHub
+    clientId: $SPI_GITHUB_CLIENT_ID
+    clientSecret: $SPI_GITHUB_CLIENT_SECRET
+  - type: Quay
+    clientId: $SPI_QUAY_CLIENT_ID
+    clientSecret: $SPI_QUAY_CLIENT_SECRET
+baseUrl: https://$OAUTH_URL
+
+EOF
+)
+
 echo "Please go to https://github.com/settings/developers."
 echo "And register new Github OAuth application for callback https://"$OAUTH_URL"/github/callback"
-echo "After that update Github's clientId and clientSecret in "$SCRIPT_DIR'/../config/os/config.yaml'
+
+CONFIG_SECRET='oauth-config' #$(kubectl get secrets  -l app.kubernetes.io/part-of=service-provider-integration-operator  -n spi-system -o json | jq '.items[0].metadata.name' -r)
+echo $CONFIG_SECRET
+#kubectl delete secret/$CONFIG_SECRET -n spi-system
+echo "$spiConfig" > "$tmpfile"
+cat $tmpfile
+
+
+kubectl create secret generic  $CONFIG_SECRET \
+--save-config --dry-run=client \
+--from-file="$tmpfile"  \
+-o yaml |
+kubectl apply -n spi-system  -f -
+
+
+rm "$tmpfile"
+
+
+kubectl rollout restart  deployment/spi-controller-manager  -n spi-system
+kubectl rollout restart  deployment/spi-oauth-service  -n spi-system

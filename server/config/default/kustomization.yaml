@@ -1,12 +1,12 @@
 # Adds namespace to all resources.
-namespace: spi-scm # WARN: keep this in sync with the namespace defined in the prepare base
+namespace: spi-system # WARN: keep this in sync with the namespace defined in the prepare base
 
 # Value of this field is prepended to the
 # names of all resources, e.g. a deployment named
 # "wordpress" becomes "alices-wordpress".
 # Note that it should also match with the prefix (text before '-') of the namespace
 # field above.
-namePrefix: spi-scm- # WARN: keep this in sync with the namespace defined in the prepare base
+namePrefix: spi-system- # WARN: keep this in sync with the namespace defined in the prepare base
 
 images:
 - name: quay.io/redhat-appstudio/service-provider-integration-scm-file-retriever-server

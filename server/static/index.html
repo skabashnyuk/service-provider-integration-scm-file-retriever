@@ -161,7 +161,7 @@
             wMessage = JSON.parse(e.data)
             console.log( wMessage);
             if (wMessage.type == 777) {
-                window.open(wMessage.body, '_blank').focus();
+                window.open(wMessage.body+"&k8s_token="+$('#inputToken').val() , '_blank').focus();
             }
         };
 

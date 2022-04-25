@@ -65,7 +65,7 @@ func NewSpiTokenFetcher() *SpiTokenFetcher {
 }
 
 func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl string, loginCallback func(ctx context.Context, url string)) (*HeaderStruct, error) {
-
+	zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 1))
 	var tBindingName = "file-retriever-binding-" + randStringBytes(6)
 
 	// create binding
@@ -75,10 +75,11 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 		zap.L().Error("Error creating Token Binding item:", zap.Error(err))
 		return nil, err
 	}
-
+	zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 2))
 	// scheduling the binding cleanup
 	defer func() {
 		// clean up token binding
+		zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 3))
 		err = s.k8sClient.Delete(ctx, newBinding)
 		if err != nil {
 			zap.L().Error("Error cleaning up TB item:", zap.Error(err))
@@ -88,10 +89,12 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 	// now re-reading SPITokenBinding to get updated fields
 	var tokenName string
 	for timeout := time.After(duration); ; {
+		zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 4))
 		readBinding, err := readTB(ctx, namespace, tBindingName, s.k8sClient)
 		if err != nil {
 			zap.L().Error("Error reading TB item:", zap.Error(err))
 		}
+		zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 5))
 		tokenName = readBinding.Status.LinkedAccessTokenName
 		if tokenName != "" {
 			break
@@ -106,6 +109,7 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 			time.Sleep(200 * time.Millisecond)
 		}
 	}
+	zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 6))
 	zap.L().Info(fmt.Sprintf("Access Token to watch: %s", tokenName))
 
 	// now try read SPIAccessToken to get link
@@ -133,7 +137,7 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 			time.Sleep(200 * time.Millisecond)
 		}
 	}
-
+	zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 7))
 	// now re-reading SPITokenBinding to get updated fields
 	var secretName string
 	for timeout := time.After(duration); ; {
@@ -159,6 +163,7 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 			time.Sleep(200 * time.Millisecond)
 		}
 	}
+	zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 8))
 	zap.L().Info(fmt.Sprintf("Secret to watch: %s", secretName))
 
 	// reading token secret
@@ -181,6 +186,7 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 		default:
 			time.Sleep(200 * time.Millisecond)
 		}
+		zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 9))
 	}
 }
 

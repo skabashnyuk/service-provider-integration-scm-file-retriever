@@ -24,8 +24,8 @@ roleRef:
   name: kube-rbac-proxy
 subjects:
   - kind: ServiceAccount
-    name: spi-scm-file-retriever-server-sa
-    namespace: spi-scm
+    name: spi-system-file-retriever-server-sa
+    namespace: spi-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

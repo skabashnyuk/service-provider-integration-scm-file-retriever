@@ -3,7 +3,7 @@ set -e
 echo 'Testing SPIAccessTokenBinding'
 
 
-cat <<EOF | kubectl apply -n spi-scm -f -
+cat <<EOF | kubectl apply -n spi-system -f -
 apiVersion: appstudio.redhat.com/v1beta1
 kind: SPIAccessTokenBinding
 metadata:
