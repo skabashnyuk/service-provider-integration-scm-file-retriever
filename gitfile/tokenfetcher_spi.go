@@ -80,7 +80,7 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 	defer func() {
 		// clean up token binding
 		zap.L().Info(fmt.Sprintf("BuildHeader stag1: %d", 3))
-		err = s.k8sClient.Delete(ctx, newBinding)
+		//err = s.k8sClient.Delete(ctx, newBinding)
 		if err != nil {
 			zap.L().Error("Error cleaning up TB item:", zap.Error(err))
 		}
