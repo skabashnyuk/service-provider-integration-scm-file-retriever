@@ -7,7 +7,7 @@ kustomize build server/config/os | oc apply -f -
 echo 'Vault init'
 $MY_PATH/vault-init.sh
 echo 'updating provider configuration'
-$MY_PATH/11_oc_update_config.sh
+$MY_PATH/96_os_deploy_oauth_config.sh
 echo 'restarting services '
 oc rollout status deployment/spi-system-file-retriever-server  -n spi-system
 oc rollout status deployment/spi-controller-manager  -n spi-system

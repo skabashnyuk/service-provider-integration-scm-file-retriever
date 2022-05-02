@@ -4,16 +4,16 @@ resources:
   - ../default
   - oauth_route.yaml
   - scm_route.yaml
-  - https://github.com/redhat-appstudio/service-provider-integration-operator/config/default?ref=53e870e32db78603485621337f57c09793bcf06f
+  - https://github.com/redhat-appstudio/service-provider-integration-operator/config/default?ref=dbbad2bacb3a2fc619647c6a0514dc9aa88f5c37
 
 
 images:
   - name: quay.io/redhat-appstudio/service-provider-integration-operator
     newName: quay.io/redhat-appstudio/service-provider-integration-operator
-    newTag: 0.2.3
+    newTag: 0.4.6
   - name:  quay.io/redhat-appstudio/service-provider-integration-oauth
     newName:  quay.io/redhat-appstudio/service-provider-integration-oauth
-    newTag: 0.2.2
+    newTag: 0.4.6
   - name: quay.io/redhat-appstudio/service-provider-integration-scm-file-retriever-server
     newName:  quay.io/redhat-appstudio/service-provider-integration-scm-file-retriever-server
-    newTag: 0.2.5
+    newTag: next
