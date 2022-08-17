@@ -15,5 +15,3 @@ make docker-push SPIS_TAG_NAME=$SPIS_TAG_NAME SPIS_IMAGE_TAG_BASE=$SPIS_IMAGE_TA
 #docker tag "quay.io/redhat-appstudio/service-provider-integration-scm-file-retriever-server:"$SPIS_TAG_NAME $REGISTRY/"redhat-appstudio/service-provider-integration-scm-file-retriever-server:"$SPIS_TAG_NAME
 #docker push $REGISTRY/$IMAGE
 oc set image deployment/spi-system-file-retriever-server server=$SPIS_IMAGE_TAG_BASE':'$SPIS_TAG_NAME -n spi-system
-
-
