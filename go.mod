@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/imroc/req v0.3.2
-	github.com/redhat-appstudio/service-provider-integration-operator v0.7.3-0.20220816162502-d725d5984cf4
+	github.com/redhat-appstudio/service-provider-integration-operator v0.7.3
 	github.com/stretchr/testify v1.8.0
 	go.uber.org/zap v1.21.0
 	k8s.io/api v0.24.3
