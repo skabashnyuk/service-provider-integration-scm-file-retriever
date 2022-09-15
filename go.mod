@@ -4,9 +4,9 @@ go 1.18
 
 require (
 	github.com/imroc/req v0.3.2
-	github.com/redhat-appstudio/service-provider-integration-operator v0.7.3
+	github.com/redhat-appstudio/service-provider-integration-operator v0.8.0
 	github.com/stretchr/testify v1.8.0
-	go.uber.org/zap v1.21.0
+	go.uber.org/zap v1.23.0
 	k8s.io/api v0.24.3
 	k8s.io/apimachinery v0.24.3
 	k8s.io/client-go v0.24.3
@@ -40,9 +40,9 @@ require (
 	github.com/rogpeppe/go-internal v1.6.2 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4 // indirect
+	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
+	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect
