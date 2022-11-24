@@ -21,7 +21,7 @@ COPY static/index.html static/index.html
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o spi-file server.go
 
 # Compose the final image
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.6-994
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.7-923
 
 # Install the 'shadow-utils' which contains `adduser` and `groupadd` binaries
 RUN microdnf install shadow-utils \
