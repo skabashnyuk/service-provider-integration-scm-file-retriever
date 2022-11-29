@@ -239,7 +239,7 @@ func randStringBytes(n int) string {
 	rand.Seed(time.Now().UnixNano())
 	b := make([]byte, n)
 	for i := range b {
-		b[i] = letterBytes[rand.Intn(len(letterBytes))] //nolint:gosec // we're using this to produce a random name so
+		b[i] = letterBytes[rand.Intn(len(letterBytes))] //#nosec G404 -- we're using this to produce a random name so
 		// the weakness of the generator is not a big deal here
 	}
 	return string(b)
