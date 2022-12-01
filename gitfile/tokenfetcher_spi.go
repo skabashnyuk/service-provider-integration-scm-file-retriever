@@ -191,7 +191,7 @@ func (s *SpiTokenFetcher) BuildHeader(ctx context.Context, namespace, repoUrl st
 			return nil, fmt.Errorf("failed to read the token secret: %w", err)
 		}
 		if len(tokenSecret.Data) > 0 {
-			return &HeaderStruct{Authorization: "Bearer " + string(tokenSecret.Data["password"])}, nil
+			return &HeaderStruct{Authorization: string(tokenSecret.Data["password"])}, nil
 		}
 		select {
 		case <-ctx.Done():

@@ -14,11 +14,12 @@
 package gitfile
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"regexp"
 
-	"github.com/imroc/req"
+	"github.com/imroc/req/v3"
 	"go.uber.org/zap"
 )
 
@@ -42,7 +43,7 @@ var GithubURLRegexpNames = GithubURLRegexp.SubexpNames()
 type GitHubScmProvider struct {
 }
 
-func (d *GitHubScmProvider) detect(repoUrl, filepath, ref string, opts ...interface{}) (bool, string, error) {
+func (d *GitHubScmProvider) detect(ctx context.Context, repoUrl, filepath, ref string, cl *req.Client, auth HeaderStruct) (bool, string, error) {
 	if len(repoUrl) == 0 || !GithubURLRegexp.MatchString(repoUrl) {
 		return false, "", nil
 	}
@@ -52,32 +53,29 @@ func (d *GitHubScmProvider) detect(repoUrl, filepath, ref string, opts ...interf
 	for i, n := range result[0] {
 		m[GithubURLRegexpNames[i]] = n
 	}
-	param := req.Param{}
+	request := cl.R().SetContext(ctx).SetBearerAuthToken(auth.Authorization)
 	if ref != "" {
-		param["ref"] = ref
-		opts = append(opts, param)
+		request.SetQueryParam("ref", ref)
 	}
 
-	resp, err := req.Get(fmt.Sprintf(GithubAPITemplate, m["repoUser"], m["repoName"], filepath), opts...)
+	var file GithubFile
+	var errMsg ErrorMessage
+	resp, err := request.
+		SetResult(&file).
+		SetError(&errMsg).
+		Get(fmt.Sprintf(GithubAPITemplate, m["repoUser"], m["repoName"], filepath))
 	if err != nil {
 		zap.L().Error("Failed to make GitHub API call", zap.Error(err))
 		return true, "", fmt.Errorf("GitHub API call failed: %w", err)
 	}
-	res := resp.Response()
-	defer res.Body.Close()
-
-	statusCode := res.StatusCode
+	statusCode := resp.StatusCode
 	zap.L().Debug(fmt.Sprintf(
 		"GitHub API call response code: %d", statusCode))
-	if statusCode >= 400 {
+	if !resp.IsSuccess() {
 		return true, "", fmt.Errorf("%w: %d. Response: %s", unexpectedStatusCodeError, statusCode, resp.String())
 	}
-
-	var file GithubFile
-	err = resp.ToJSON(&file)
-	if err != nil {
-		zap.L().Error("Failed to parse GitHub json response", zap.Error(err))
-		return true, "", fmt.Errorf("failed to convert GitHub response to JSON: %w", err)
+	if resp.IsError() {
+		return true, "", fmt.Errorf("%w: %d. Error message: %s", unexpectedStatusCodeError, statusCode, errMsg.Message)
 	}
 	return true, file.DownloadUrl, nil
 }

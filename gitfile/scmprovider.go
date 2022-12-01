@@ -14,8 +14,10 @@
 package gitfile
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/imroc/req/v3"
 )
 
 var (
@@ -26,9 +28,9 @@ var (
 type ScmProvider interface {
 	// detect will check whether the provided repository URL matches a known SCM pattern,
 	// and transform input params into valid file download URL.
-	// Params are repository, path to the file inside the repository, Git reference (branch/tag/commitId) and
-	// set of optional parameters ScmProvider may need, such as Http headers, additional resource identifiers etc
-	detect(repoUrl, filepath, ref string, opts ...interface{}) (bool, string, error)
+	// Params are context, repository, path to the file inside the repository, Git reference (branch/tag/commitId) and
+	// HTTP client instance and authentication headers holder struct
+	detect(ctx context.Context, repoUrl, filepath, ref string, client *req.Client, auth HeaderStruct) (bool, string, error)
 }
 
 // ScmProviders is the list of detectors that are tried on an SCM URL.
@@ -42,9 +44,9 @@ func init() {
 	}
 }
 
-func detect(repoUrl, filepath, ref string, opts ...interface{}) (string, error) {
+func detect(ctx context.Context, repoUrl, filepath, ref string, client *req.Client, auth HeaderStruct) (string, error) {
 	for _, d := range ScmProviders {
-		ok, resultUrl, err := d.detect(repoUrl, filepath, ref, opts...)
+		ok, resultUrl, err := d.detect(ctx, repoUrl, filepath, ref, client, auth)
 		if err != nil {
 			return "", fmt.Errorf("detection failed: %w", err)
 		}

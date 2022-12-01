@@ -32,6 +32,6 @@ func (s *EnvVarTokenFetcher) BuildHeader(context.Context, string, string, func(c
 		return nil, noEnvVarFoundError
 	}
 	return &HeaderStruct{
-		"Bearer " + envToken,
+		envToken,
 	}, nil
 }

@@ -14,13 +14,15 @@
 package gitfile
 
 import (
+	"context"
+	"github.com/imroc/req/v3"
 	"strings"
 )
 
 // GitLabScmProvider implements Detector to detect Gitlab URLs.
 type GitLabScmProvider struct{}
 
-func (d *GitLabScmProvider) detect(repoUrl, filepath, ref string, opts ...interface{}) (bool, string, error) {
+func (d *GitLabScmProvider) detect(ctx context.Context, repoUrl, filepath, ref string, cl *req.Client, auth HeaderStruct) (bool, string, error) {
 	if len(repoUrl) == 0 {
 		return false, "", nil
 	}
