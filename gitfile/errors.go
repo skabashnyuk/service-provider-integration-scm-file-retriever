@@ -13,17 +13,30 @@
 
 package gitfile
 
-import (
-	"context"
-	"os"
-	"testing"
+import "fmt"
 
-	"github.com/stretchr/testify/assert"
-)
+type UnauthorizedError struct {
+}
 
-func TestCreateHeaderStructFromEnv(t *testing.T) {
-	t.Setenv("TOKEN", "abcd_foo")
-	defer os.Unsetenv("TOKEN")
-	headerStruct, _ := new(EnvVarTokenFetcher).BuildHeader(context.Background(), "default", "https://github.com/any/test.git", func(ctx context.Context, S string) {})
-	assert.Equal(t, "abcd_foo", headerStruct.Authorization, "Authorization header value mismatch")
+func (e *UnauthorizedError) Error() string {
+	return "Request to SCM server was unauthorized or resource is not found"
+}
+
+type InvalidRequestError struct {
+	message  string
+	repoUrl  string
+	filePath string
+}
+
+func (e *InvalidRequestError) Error() string {
+	return fmt.Sprintf("%s. Repository URL: %s, file path: %s", e.message, e.repoUrl, e.filePath)
+}
+
+type InternalError struct {
+	message string
+	cause   error
+}
+
+func (e *InternalError) Error() string {
+	return "Service internal error happened. Base message: " + e.message
 }

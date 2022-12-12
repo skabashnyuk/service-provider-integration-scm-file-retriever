@@ -15,13 +15,9 @@ package gitfile
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/imroc/req/v3"
-)
 
-var (
-	invalidSourceError = errors.New("invalid source string")
+	"github.com/imroc/req/v3"
 )
 
 // ScmProvider defines the interface that in order to determine if URL belongs to SCM provider
@@ -55,5 +51,5 @@ func detect(ctx context.Context, repoUrl, filepath, ref string, client *req.Clie
 		}
 		return resultUrl, nil
 	}
-	return "", fmt.Errorf("%w: %s for %s", invalidSourceError, repoUrl, filepath)
+	return "", &InvalidRequestError{"Unable to find provider for the given request", repoUrl, filepath}
 }

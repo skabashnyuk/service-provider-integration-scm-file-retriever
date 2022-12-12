@@ -16,18 +16,14 @@ package gitfile
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
-	"go.uber.org/zap"
 	"io"
+	"net/http"
 	"time"
 
-	"github.com/imroc/req/v3"
-)
+	"go.uber.org/zap"
 
-var (
-	failedFileRequestError     = errors.New("file request failed")
-	undefinedFileResponseError = errors.New("file request returned an unknown result")
+	"github.com/imroc/req/v3"
 )
 
 const defaultHttpTimeout = 5 * time.Second
@@ -37,7 +33,7 @@ type GitFile struct {
 	client  *req.Client
 }
 
-type ErrorMessage struct {
+type errorMessage struct {
 	Message string `json:"message"`
 }
 
@@ -57,23 +53,33 @@ func (g *GitFile) GetFileContents(ctx context.Context, namespace, repoUrl, filep
 	}
 
 	request := g.client.R().SetContext(ctx).SetBearerAuthToken(headerStruct.Authorization)
-	var errMsg ErrorMessage
+	var errMsg errorMessage
 	resp, err := request.
 		SetError(&errMsg).
 		Get(fileUrl)
 	if err != nil {
-		zap.L().Error("Failed to make GitHub URL call", zap.Error(err))
-		return nil, fmt.Errorf("GitHub file call failed: %w", err)
+		zap.L().Error("Failed to make file content request", zap.Error(err))
+		return nil, &InternalError{fmt.Sprintf("File content request failed: %s", err.Error()), err}
 	}
 	zap.L().Debug(fmt.Sprintf(
 		"GitHub file call response code: %d", resp.GetStatusCode()))
+	// 2xx
 	if resp.IsSuccess() {
 		return io.NopCloser(bytes.NewBuffer(resp.Bytes())), nil
 	}
+	// >= 400
 	if resp.IsError() {
-		return nil, fmt.Errorf("%w. Status code: %d. Message: %s", failedFileRequestError, resp.GetStatusCode(), errMsg.Message)
+		switch resp.StatusCode {
+		case http.StatusBadRequest:
+			return nil, &InternalError{"File content request has wrong format", nil}
+		case http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound:
+			return nil, &UnauthorizedError{}
+		default:
+			return nil, &InternalError{fmt.Sprintf("Unexpected status code returned when make file content request: %d. Message: %s", resp.StatusCode, errMsg.Message), nil}
+		}
 	}
-	return nil, fmt.Errorf("%w. Status code: %d. Content: %s", undefinedFileResponseError, resp.GetStatusCode(), resp.Dump())
+	// strange cases like 3xx etc
+	return nil, &InternalError{fmt.Sprintf("File content request returned unexpected code: %d. Content dump: %s", resp.StatusCode, resp.Dump()), nil}
 }
 
 // New creates a new *GitFile instance

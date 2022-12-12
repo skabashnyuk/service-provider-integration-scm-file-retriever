@@ -15,8 +15,9 @@ package gitfile
 
 import (
 	"context"
-	"github.com/imroc/req/v3"
 	"strings"
+
+	"github.com/imroc/req/v3"
 )
 
 // GitLabScmProvider implements Detector to detect Gitlab URLs.

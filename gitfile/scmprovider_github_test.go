@@ -16,11 +16,13 @@ package gitfile
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/imroc/req/v3"
-	"github.com/jarcoal/httpmock"
 	"net/http"
 	"testing"
+
+	"github.com/imroc/req/v3"
+	"github.com/jarcoal/httpmock"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -130,6 +132,7 @@ func TestGetUnexistingFile(t *testing.T) {
 	if err == nil {
 		t.Error("error expected")
 	}
-	assert.Equal(t, "detection failed: unexpected status code from GitHub API: 404. Response: {\"message\":\"File Is Not Found\"}", fmt.Sprint(err))
+	assert.True(t, errors.Is(err, &UnauthorizedError{}))
+	assert.Equal(t, "detection failed: Request to SCM server was unauthorized or resource is not found", fmt.Sprint(err))
 
 }
